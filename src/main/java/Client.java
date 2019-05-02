@@ -12,6 +12,11 @@ class Client {
 
 	void askForMatch(int timeout) throws RemoteException, NotBoundException, MalformedURLException {
 		MatcherService service = (MatcherService) Naming.lookup("rmi://localhost:2306/matchmaker");
-		System.out.println(service.match(name, timeout));
+		String matchedClient = service.match(name, timeout);
+		if (matchedClient == null) {
+			System.out.println(name + " cannot be matched at the moment.");
+		} else {
+			System.out.println(name + " is matched with " + matchedClient);
+		}
 	}
 }

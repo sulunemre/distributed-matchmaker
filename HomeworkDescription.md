@@ -5,7 +5,7 @@ the unique name of the client who wants to be matched. The second parameter is t
 can wait). The method returns the name of another client who is currently looking for matches. If a match cannot be
 found in `timeoutSecs` seconds, then the method should return null.
 Once two clients get each others' names, they should get a remote reference to each other and wait for a `handshake()`
-call. Use the client name lexographical order to order the `handshakes()`.
+call. Use the client name lexicographical order to order the `handshakes()`.
 Here is an example order of events:
 - A asks the server for a match
 - B asks the server for a match
