@@ -3,8 +3,9 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.Timestamp;
 
 public class MatcherServant extends UnicastRemoteObject implements MatcherService {
-	private String waitingClient;
-	private long expirationTime;
+	private String waitingClientName;
+	private Thread waitingClientThread;
+	private String newClientName;
 
 	MatcherServant() throws RemoteException {
 	}
@@ -12,21 +13,37 @@ public class MatcherServant extends UnicastRemoteObject implements MatcherServic
 	@Override
 	public String match(String name, int timeoutSecs) {
 		long currentTime = System.currentTimeMillis();
-		System.out.println(name + " wants to get matched in " + timeoutSecs + " seconds at " + new Timestamp(System.currentTimeMillis()));
-		if (expirationTime >= currentTime && waitingClient != null) { // Match is successful
-			String matchedClient = waitingClient;
-			waitingClient = null;
+		System.out.println(name + " wants to get matched in " + timeoutSecs + " seconds at " + new Timestamp(currentTime));
 
-			return matchedClient;
-		} else { // Not matched
-			waitingClient = name;
-			expirationTime = currentTime + timeoutSecs * 1000;
+		if (waitingClientName == null) { // Wait for a match if no one is waiting
+			waitingClientName = name;
+			System.out.println(name + " is waiting for a match.");
+			try {
+				waitingClientThread = Thread.currentThread();
+				Thread.sleep(timeoutSecs * 1000);
+			} catch (InterruptedException e) {
+				System.out.println(name + " found a match after waiting.");
+				return newClientName;
+			}
+
+
+			System.out.println(name + " could not find a match");
+			waitingClientName = null;
+			waitingClientThread = null;
 
 			return null;
-		}
-	}
 
-	String getCurrentWaitingClient() {
-		return waitingClient + " is waiting until " + expirationTime;
+		} else { // Match with the waiting client
+			newClientName = name;
+			waitingClientThread.interrupt();
+
+			String matchedClient = waitingClientName;
+			System.out.println(name + " is matched with " + matchedClient + " immediately.");
+
+			waitingClientName = null;
+			waitingClientName = null;
+
+			return matchedClient;
+		}
 	}
 }

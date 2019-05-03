@@ -10,6 +10,7 @@ class Server {
 	}
 
 	void start() throws RemoteException {
+		System.setProperty("java.rmi.server.hostname", "139.179.103.76");
 		Registry registry = LocateRegistry.createRegistry(port);
 		System.out.println("Matchmaker server is listening on port " + port);
 		registry.rebind("matchmaker", new MatcherServant());

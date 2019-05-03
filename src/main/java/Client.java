@@ -14,9 +14,9 @@ class Client {
 		MatcherService service = (MatcherService) Naming.lookup("rmi://localhost:2306/matchmaker");
 		String matchedClient = service.match(name, timeout);
 		if (matchedClient == null) {
-			System.out.println(name + " cannot be matched at the moment.");
+			System.out.println("CLIENT " + name + ": I could not get matched.");
 		} else {
-			System.out.println(name + " is matched with " + matchedClient);
+			System.out.println("CLIENT " + name + ": I am matched with " + matchedClient + ".");
 		}
 	}
 }
