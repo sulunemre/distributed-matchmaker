@@ -17,17 +17,17 @@ public class MatcherServant extends UnicastRemoteObject implements MatcherServic
 
 		if (waitingClientName == null) { // Wait for a match if no one is waiting
 			waitingClientName = name;
-			System.out.println(name + " is waiting for a match.");
+			System.out.println(waitingClientName + " is waiting for a match.");
 			try {
 				waitingClientThread = Thread.currentThread();
 				Thread.sleep(timeoutSecs * 1000);
-			} catch (InterruptedException e) {
+			} catch (InterruptedException e) { // Another client comes in during waiting
 				System.out.println(name + " found a match after waiting.");
 				return newClientName;
 			}
 
-
-			System.out.println(name + " could not find a match");
+			// No one comes after waiting
+			System.out.println(waitingClientName + " could not find a match");
 			waitingClientName = null;
 			waitingClientThread = null;
 
@@ -37,10 +37,10 @@ public class MatcherServant extends UnicastRemoteObject implements MatcherServic
 			newClientName = name;
 			waitingClientThread.interrupt();
 
-			String matchedClient = waitingClientName;
-			System.out.println(name + " is matched with " + matchedClient + " immediately.");
 
-			waitingClientName = null;
+			String matchedClient = waitingClientName;
+			System.out.println(newClientName + " is matched with " + matchedClient + " immediately.");
+
 			waitingClientName = null;
 
 			return matchedClient;
